@@ -1,9 +1,28 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Query } from '@nestjs/common';
 import { ToolsService } from './tools.service';
+import { GetResponseToReasonForCancellationType } from 'src/types/getResponseToReasonForCancellationQuery.type';
+import { GetResponseToPolicyAndReasonForCancellationType } from 'src/types/getResponseToPolicyAndReasonForCancellationQuery.type';
 
 @Controller('tools')
 export class ToolsController {
   constructor(private readonly toolsService: ToolsService) {}
+
+  @Post('/retention/reason-for-cancellation')
+  getResponseToReasonForCancellation(
+    @Query() query: GetResponseToReasonForCancellationType,
+  ) {
+    return this.toolsService.getResponseToReasonForCancellation(query.reason);
+  }
+
+  @Post('/retention/policy-and-reason-for-cancellation')
+  getResponseToPolicyAndReasonForCancellation(
+    @Query() query: GetResponseToPolicyAndReasonForCancellationType,
+  ) {
+    return this.toolsService.getResponseToPolicyAndReasonForCancellation(
+      // query.policy,
+      query.reason,
+    );
+  }
 
   @Post('identity-verification')
   verifyIdentity(@Body() data: any) {
