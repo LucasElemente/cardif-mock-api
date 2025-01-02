@@ -25,7 +25,7 @@ export class ToolsController {
   }
 
   @Post('identity-verification')
-  verifyIdentity(@Body() data: any) {
+  verifyIdentity(@Query() data: any) {
     return this.toolsService.verifyIdentity(data);
   }
 

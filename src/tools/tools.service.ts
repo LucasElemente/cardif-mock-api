@@ -29,6 +29,7 @@ export class ToolsService {
   }
 
   verifyIdentity(data: any) {
+    this.logger.log({ data });
     this.logger.log(
       `[verifyIdentity] with values ${JSON.stringify(data ?? {}, null, 3)}`,
     );
@@ -36,7 +37,11 @@ export class ToolsService {
     return {
       success: true,
       message: 'Identity verified successfully.',
-      data,
+      data: {
+        name: 'Liza Franco',
+        email: 'liza@cardif.com',
+        birthDate: '01/01/2001',
+      },
     };
   }
 
@@ -191,8 +196,6 @@ export class ToolsService {
 
     this.logger.log({ reason });
 
-    const randomPolicy = this.getRandomPolicy();
-
     const responses = {
       cancer: {
         no_interesa_o_no_necesita: `
@@ -260,9 +263,31 @@ export class ToolsService {
             ¿Has considerado la tranquilidad que brinda este seguro para enfrentar los costos inesperados de un accidente?
           `,
       },
+      fraude: {
+        no_interesa_o_no_necesita: `
+            ¿Qué harías si fueras víctima de un fraude financiero? 
+            ¿Cómo cubrirías las pérdidas sin este seguro?
+        `,
+        motivos_economicos: `
+            Aunque estés ajustando tus gastos, ¿te has planteado cuánto podría costarte enfrentar un fraude sin este respaldo?
+        `,
+        ya_tiene_seguro: `
+            ¿Tu otro seguro incluye protección contra fraudes? 
+            Este producto puede ser un complemento esencial.
+        `,
+        objecion_de_un_siniestro: `
+            Sabemos que una experiencia previa puede generar dudas, pero ¿no crees que seguir protegido contra fraudes es más importante que nunca?
+        `,
+        entrega_producto_financiero: `
+            Aunque estés cancelando el producto financiero, ¿has pensado en los riesgos de fraude que podrías enfrentar sin esta protección adicional?
+        `,
+        otros_motivos: `
+            ¿Sabías que los fraudes financieros han incrementado y este seguro puede ayudarte a recuperar tu estabilidad?
+        `,
+      },
     };
 
-    const response = responses[randomPolicy] || responses[EPolicies.DESEMPLEO];
+    const response = responses['fraude'];
     const message =
       response[reason.toLocaleLowerCase().replace(/\$/g, '')] ||
       response['otros_motivos'];
