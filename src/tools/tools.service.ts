@@ -1,137 +1,117 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ECancellationReasons, EPolicies } from 'src/shared/enums';
+import { GetFirstRoundOfObjectionsForRetentionQuery } from 'src/types/getFirstRoundOfObjectionsForRetentionQuery.type';
+import { GetSecondRoundOfObjectionsForRetention } from 'src/types/getResponseToPolicyAndReasonForCancellationQuery.type';
+import { GetValidationDataQuery } from 'src/types/getValidationDataQuery.type';
 
 @Injectable()
 export class ToolsService {
   private readonly logger = new Logger(ToolsService.name);
 
-  private pickRandomItems(sourceArray, count) {
-    // Make a copy of the sourceArray to avoid modifying the original
-    const sourceCopy = [...sourceArray];
-    const selectedItems = [];
+  private readonly defaultCustomerData = {
+    fullName: 'Liza Franco',
+    birthDate: '19/04/2000',
+    phoneNumber: '1234567',
+    email: 'liza@gmail.com',
+    documentNumber: '789123',
+    documentType: 'CC',
+    policies: [
+      {
+        status: 'V',
+        name: 'Accidentes Personales',
+        dateStart: '19/05/2022',
+        prdId: '7032',
+        grossValue: '1440000.0',
+        valuePerMonth: '60000.0',
+        valuePerDay: '2000.0',
+        currency: 'COP',
+      },
+    ],
+  };
 
-    // Pick `count` random items
-    for (let i = 0; i < count; i++) {
-      if (sourceCopy.length === 0) break; // Stop if there are no more items to pick
-      const randomIndex = Math.floor(Math.random() * sourceCopy.length);
-      selectedItems.push(sourceCopy[randomIndex]);
-      sourceCopy.splice(randomIndex, 1); // Remove the selected item
-    }
+  private readonly customerPool = {
+    '123456': {
+      fullName: 'Cesar Llajaruna',
+      birthDate: '19/01/1999',
+      phoneNumber: '1234567',
+      email: 'cesar@gmail.com',
+      documentNumber: '123456',
+      documentType: 'CC',
+      policies: [
+        {
+          status: 'V',
+          name: 'Vida Prestige',
+          dateStart: '19/05/2022',
+          prdId: '7032',
+          grossValue: '1440000.0',
+          valuePerMonth: '60000.0',
+          valuePerDay: '2000.0',
+          currency: 'COP',
+        },
+      ],
+    },
+    '456789': {
+      fullName: 'Lucas Felipe Dalamarta',
+      birthDate: '17/03/1998',
+      phoneNumber: '1234567',
+      email: 'lucas@gmail.com',
+      documentNumber: '456789',
+      documentType: 'CC',
+      policies: [
+        {
+          status: 'V',
+          name: 'Unemployment',
+          dateStart: '19/05/2022',
+          prdId: '7032',
+          grossValue: '1440000.0',
+          valuePerMonth: '60000.0',
+          valuePerDay: '2000.0',
+          currency: 'COP',
+        },
+      ],
+    },
+    '789123': {
+      fullName: 'Liza Franco',
+      birthDate: '19/04/2000',
+      phoneNumber: '1234567',
+      email: 'liza@gmail.com',
+      documentNumber: '789123',
+      documentType: 'CC',
+      policies: [
+        {
+          status: 'V',
+          name: 'Accidentes Personales',
+          dateStart: '19/05/2022',
+          prdId: '7032',
+          grossValue: '1440000.0',
+          valuePerMonth: '60000.0',
+          valuePerDay: '2000.0',
+          currency: 'COP',
+        },
+      ],
+    },
+  };
 
-    // Add selected items to the target array
-    return selectedItems;
-  }
-
-  private getRandomPolicy() {
-    const values = Object.values(EPolicies); // Get all enum values
-    const randomIndex = Math.floor(Math.random() * values.length); // Pick a random index
-    return values[randomIndex];
-  }
-
-  verifyIdentity(data: any) {
-    this.logger.log({ data });
+  verifyIdentity(query: GetValidationDataQuery) {
+    this.logger.log({ query });
     this.logger.log(
-      `[verifyIdentity] with values ${JSON.stringify(data ?? {}, null, 3)}`,
+      `[verifyIdentity] with values ${JSON.stringify(query ?? {}, null, 3)}`,
     );
 
     return {
       success: true,
       message: 'Identity verified successfully.',
-      data: {
-        name: 'Liza Franco',
-        email: 'liza@cardif.com',
-        birthDate: '01/01/2001',
-      },
+      data: this.customerPool[query.customerId] || this.defaultCustomerData,
     };
   }
 
-  lookupPolicy(data: any) {
+  firstRoundOfObjectionsForRetention(
+    query: GetFirstRoundOfObjectionsForRetentionQuery,
+  ) {
     this.logger.log(
-      `[lookupPolicy] with values ${JSON.stringify(data ?? {}, null, 3)}`,
+      `[getResponseToReasonForCancellation] with values ${JSON.stringify(query ?? {}, null, 3)}`,
     );
 
-    return {
-      success: true,
-      message: 'Policy details retrieved successfully.',
-      policyDetails: {
-        policyName: 'Cuota protegida',
-        startDate: '2022-02-19',
-        coverage: '$10.000',
-      },
-    };
-  }
-
-  explainBenefits(data: any) {
-    this.logger.log(
-      `[explainBenefits] with values ${JSON.stringify(data ?? {}, null, 3)}`,
-    );
-
-    // const benefits = [
-    //   'Protection against accidental death',
-    //   'Covers debit and credit card fraud',
-    //   "You have Tax guidance, which means that you can do your taxes with the help of our platform, at no extra cost, only requiring the policy's monthly payment",
-    //   "You have access to the Coursera platform, with over 1500 courses, for you, and for a beneficiary, For instance, if you or a family member wants to take a course in English, IT, or economics, you can do so through that platform at no additional cost, only requiring the policy's monthly payment",
-    // ];
-
-    const benefits = [
-      'Protección contra muerte accidental',
-      'Cubre fraudes en tarjetas de débito y crédito',
-      'Cuenta con orientación tributaria, lo que significa que puede realizar su declaración de impuestos con la ayuda de nuestra plataforma, sin costo adicional, solo requiriendo el pago mensual de la póliza',
-      'Tiene acceso a la plataforma Coursera, con más de 1500 cursos, para usted y un beneficiario. Por ejemplo, si usted o un miembro de su familia desea tomar un curso de inglés, informática o economía, puede hacerlo a través de esa plataforma sin costo adicional, solo requiriendo el pago mensual de la póliza',
-    ];
-
-    return {
-      success: true,
-      message: 'Beneficios explicados con éxito.',
-      benefits: this.pickRandomItems(benefits, 2),
-    };
-  }
-
-  updateCommunication(data: any) {
-    this.logger.log(
-      `[updateCommunication] with values ${JSON.stringify(data ?? {}, null, 3)}`,
-    );
-
-    return {
-      success: true,
-      message: 'Contact information updated successfully.',
-      data,
-    };
-  }
-
-  shareDocument(data: any) {
-    this.logger.log(
-      `[shareDocument] with values ${JSON.stringify(data ?? {}, null, 3)}`,
-    );
-
-    return {
-      success: true,
-      message: 'Document shared successfully.',
-      link: data.documentLink,
-    };
-  }
-
-  optionalBenefits(data: any) {
-    this.logger.log(
-      `[optionalBenefits] with values ${JSON.stringify(data ?? {}, null, 3)}`,
-    );
-
-    return {
-      success: true,
-      message: 'Optional benefits shared successfully.',
-      benefits: [
-        'Free tax declaration services',
-        'Access to an educational platform',
-      ],
-    };
-  }
-
-  getResponseToReasonForCancellation(reason: ECancellationReasons) {
-    this.logger.log(
-      `[getResponseToReasonForCancellation] with values ${JSON.stringify(reason ?? '', null, 3)}`,
-    );
-
-    this.logger.log({ reason });
+    this.logger.log({ query });
 
     const responses = {
       no_accepta_el_seguro: `
@@ -177,7 +157,7 @@ export class ToolsService {
       `;
 
     const message =
-      responses[reason.toLocaleLowerCase().replace(/\$/g, '')] ||
+      responses[query.reason.toLocaleLowerCase().replace(/\$/g, '')] ||
       defaultResponse;
 
     return {
@@ -186,38 +166,44 @@ export class ToolsService {
     };
   }
 
-  getResponseToPolicyAndReasonForCancellation(
-    // policy: EPolicies,
-    reason: ECancellationReasons,
+  secondRoundOfObjectionsForRetention(
+    query: GetSecondRoundOfObjectionsForRetention,
   ) {
     this.logger.log(
-      `[getResponseToPolicyAndReasonForCancellation] with values ${JSON.stringify(reason ?? '', null, 3)}`,
+      `[getResponseToPolicyAndReasonForCancellation] with values ${JSON.stringify(query ?? {}, null, 3)}`,
     );
-
-    this.logger.log({ reason });
 
     const responses = {
       cancer: {
         no_interesa_o_no_necesita: `
-            ¿Sabías que el cáncer puede afectar a cualquier persona sin previo aviso? 
-            ¿Qué plan tienes para enfrentar los gastos de un tratamiento si llegara a suceder?
-          `,
+          En Colombia, cada vez más familias enfrentan esta enfermedad. 
+          Este seguro no solo cubre gastos médicos, sino que también te da tranquilidad para afrontar lo inesperado con dignidad y seguridad.
+          ¿Te has preguntado cómo sería enfrentar esta situación sin el respaldo de un seguro?
+        `,
         motivos_economicos: `
-            ¿Has considerado el costo de un tratamiento de cáncer y cómo podría este seguro proteger tus ahorros y los de tu familia?
-          `,
+          Entiendo que cuidar tu presupuesto es importante, pero un diagnóstico de cáncer puede traer gastos que desestabilizan cualquier hogar.
+          Este seguro está diseñado para evitar que ese peso recaiga sobre ti o tus seres queridos.
+          ¿Qué opinas de invertir en tu tranquilidad y la de tu familia con un costo accesible?
+        `,
         ya_tiene_seguro: `
-            ¿Estás seguro de que tu cobertura actual incluye todas las enfermedades críticas y sus costos? 
-            Este seguro puede complementar y garantizar tu protección total.
-          `,
+          Es excelente que ya cuentes con otra póliza; estar asegurado es una decisión inteligente.
+          Sin embargo, mantener tu póliza actual también te da acceso a servicios adicionales que podrían sumar experiencias positivas a tu día a día y aprovecharlos puede ser un beneficio que no querrías dejar pasar.
+          ¿Estás seguro de que quieres perder estos beneficios?
+        `,
         objecion_de_un_siniestro: `
-            Sabemos que tu experiencia pasada puede no haber sido la ideal, pero ¿te has planteado cómo enfrentarías un diagnóstico futuro sin esta cobertura?
-          `,
+          No tengo conocimiento del motivo de rechazo de tu siniestros, pero quiero recordarte que mantener tu póliza activa te ofrece mucho más que solo protección ante imprevistos.
+          Además, te da acceso a servicios digitales exclusivos que pueden hacer tu vida mucho más fácil y ágil.
+          ¿Te has preguntado qué más podrías estar aprovechando con estos servicios disponibles para ti?
+        `,
         entrega_producto_financiero: `
-            Entendemos que estás cancelando el producto financiero, pero ¿has considerado que este seguro puede seguir protegiéndote de manera independiente ante un diagnóstico inesperado?
-          `,
+          Al mantener tu seguro, no solo cuentas con la cobertura esencial ante cualquier imprevisto, sino que también obtienes acceso a beneficios adicionales, como servicios digitales que pueden hacer tu vida más fácil y cómoda.
+          Además, continuar con tu seguro te ofrece tranquilidad, sabiendo que estarás protegido ante situaciones inesperadas que pueden surgir en cualquier momento.
+          ¿No crees que mantener esta protección te da una seguridad extra y te facilita afrontar cualquier eventualidad que pueda ocurrir?
+        `,
         otros_motivos: `
-            ¿Sabías que mantener un seguro contra enfermedades críticas podría ser tu mayor respaldo ante un diagnóstico inesperado?
-          `,
+          Entiendo tus razones, pero quiero recordarte que este seguro está diseñado para apoyarte en uno de los momentos más desafiantes que alguien puede enfrentar.
+          Mantenerlo activo significa contar con respaldo económico para tratamientos, medicamentos y cuidados esenciales, ofreciéndote tranquilidad en caso de cualquier eventualidad.
+          ¿Has pensado en cómo este respaldo podría marcar una diferencia para ti o tus seres queridos en el futuro?        `,
       },
       desempleo: {
         no_interesa_o_no_necesita: `
@@ -287,49 +273,14 @@ export class ToolsService {
       },
     };
 
-    const response = responses['fraude'];
+    const response = responses[query.policy];
     const message =
-      response[reason.toLocaleLowerCase().replace(/\$/g, '')] ||
+      response[query.reason.toLocaleLowerCase().replace(/\$/g, '')] ||
       response['otros_motivos'];
 
     return {
       success: true,
       message,
-    };
-  }
-
-  collectFeedback(data: any) {
-    this.logger.log(
-      `[collectFeedback] with values ${JSON.stringify(data ?? {}, null, 3)}`,
-    );
-
-    const mockedQuestions = [
-      'From 1 to 10, How satisfied are you with the resolution for your call?',
-      'From 1 to 10, How much did the agent understand your needs?',
-    ];
-
-    return {
-      success: true,
-      message: 'Feedback collected successfully.',
-      feedback: mockedQuestions.map((q: string, i: number) => ({
-        question: q,
-        answer: `Sample answer ${i + 1}`,
-      })),
-    };
-  }
-
-  retentionProposal(data: any) {
-    this.logger.log(
-      `[retentionProposal] with values ${JSON.stringify(data ?? {}, null, 3)}`,
-    );
-
-    return {
-      success: true,
-      message: 'Retention proposal processed successfully.',
-      proposal: {
-        discountOffered: data.discountOffered,
-        alternativePlan: data.alternativePlan,
-      },
     };
   }
 }

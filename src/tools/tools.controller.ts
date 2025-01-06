@@ -1,66 +1,29 @@
-import { Controller, Post, Body, Query } from '@nestjs/common';
+import { Controller, Post, Query } from '@nestjs/common';
 import { ToolsService } from './tools.service';
-import { GetResponseToReasonForCancellationType } from 'src/types/getResponseToReasonForCancellationQuery.type';
-import { GetResponseToPolicyAndReasonForCancellationType } from 'src/types/getResponseToPolicyAndReasonForCancellationQuery.type';
+import { GetFirstRoundOfObjectionsForRetentionQuery } from 'src/types/getFirstRoundOfObjectionsForRetentionQuery.type';
+import { GetSecondRoundOfObjectionsForRetention } from 'src/types/getResponseToPolicyAndReasonForCancellationQuery.type';
+import { GetValidationDataQuery } from 'src/types/getValidationDataQuery.type';
 
 @Controller('tools')
 export class ToolsController {
   constructor(private readonly toolsService: ToolsService) {}
 
-  @Post('/retention/reason-for-cancellation')
-  getResponseToReasonForCancellation(
-    @Query() query: GetResponseToReasonForCancellationType,
-  ) {
-    return this.toolsService.getResponseToReasonForCancellation(query.reason);
-  }
-
-  @Post('/retention/policy-and-reason-for-cancellation')
-  getResponseToPolicyAndReasonForCancellation(
-    @Query() query: GetResponseToPolicyAndReasonForCancellationType,
-  ) {
-    return this.toolsService.getResponseToPolicyAndReasonForCancellation(
-      // query.policy,
-      query.reason,
-    );
-  }
-
   @Post('identity-verification')
-  verifyIdentity(@Query() data: any) {
-    return this.toolsService.verifyIdentity(data);
+  verifyIdentity(@Query() query: GetValidationDataQuery) {
+    return this.toolsService.verifyIdentity(query);
   }
 
-  @Post('policy-lookup')
-  lookupPolicy(@Body() data: any) {
-    return this.toolsService.lookupPolicy(data);
+  @Post('/retention/objections/first-round')
+  firstRoundOfObjectionsForRetention(
+    @Query() query: GetFirstRoundOfObjectionsForRetentionQuery,
+  ) {
+    return this.toolsService.firstRoundOfObjectionsForRetention(query);
   }
 
-  @Post('benefits-explanation')
-  explainBenefits(@Body() data: any) {
-    return this.toolsService.explainBenefits(data);
-  }
-
-  @Post('communication-update')
-  updateCommunication(@Body() data: any) {
-    return this.toolsService.updateCommunication(data);
-  }
-
-  @Post('document-sharing')
-  shareDocument(@Body() data: any) {
-    return this.toolsService.shareDocument(data);
-  }
-
-  @Post('optional-benefits')
-  optionalBenefits(@Body() data: any) {
-    return this.toolsService.optionalBenefits(data);
-  }
-
-  @Post('survey-feedback')
-  collectFeedback(@Body() data: any) {
-    return this.toolsService.collectFeedback(data);
-  }
-
-  @Post('retention-proposal')
-  retentionProposal(@Body() data: any) {
-    return this.toolsService.retentionProposal(data);
+  @Post('/retention/objections/second-round')
+  secondRoundOfObjectionsForRetention(
+    @Query() query: GetSecondRoundOfObjectionsForRetention,
+  ) {
+    return this.toolsService.secondRoundOfObjectionsForRetention(query);
   }
 }
