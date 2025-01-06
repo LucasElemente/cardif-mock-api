@@ -273,7 +273,7 @@ export class ToolsService {
       },
     };
 
-    const response = responses[query.policy];
+    const response = responses[query.policy.toLocaleLowerCase()];
     const message =
       response[query.reason.toLocaleLowerCase().replace(/\$/g, '')] ||
       response['otros_motivos'];
