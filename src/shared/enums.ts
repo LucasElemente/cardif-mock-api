@@ -12,4 +12,9 @@ export enum EPolicies {
   CANCER = 'cancer',
   DESEMPLEO = 'desempleo',
   ACCIDENTES_PERSONALES = 'accidentes personales',
+  EMFERMEDADES_GRAVES = 'enfermedades_graves',
+  HOGAR = 'hogar',
+  FRAUDE = 'fraude',
+  PERDIDA_O_ROBO_DEL_BOLSO = 'perdida_o_robo_del_bolso',
+  BILLETERA_DOCUMENTOS = 'billetera_documentos',
 }
