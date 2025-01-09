@@ -8,9 +8,24 @@ import { GetValidationDataQuery } from 'src/types/getValidationDataQuery.type';
 export class ToolsController {
   constructor(private readonly toolsService: ToolsService) {}
 
-  @Post('identity-verification')
-  verifyIdentity(@Query() query: GetValidationDataQuery) {
+  @Post('/identity-verification')
+  async verifyIdentity(@Query() query: GetValidationDataQuery) {
     return this.toolsService.verifyIdentity(query);
+  }
+
+  @Post('/policy/info')
+  async policyInfo(@Query() query) {
+    return this.toolsService.policyInfo(query);
+  }
+
+  @Post('/policy/coverages')
+  async policyCoverages(@Query() query) {
+    return this.toolsService.policyCoverages(query);
+  }
+
+  @Post('/policy/ecosystem')
+  async policyEcosystem(@Query() query) {
+    return this.toolsService.policyEcosystem(query);
   }
 
   @Post('/retention/objections/first-round')

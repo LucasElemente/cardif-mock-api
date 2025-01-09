@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import axios from 'axios';
 import { GetFirstRoundOfObjectionsForRetentionQuery } from 'src/types/getFirstRoundOfObjectionsForRetentionQuery.type';
 import { GetSecondRoundOfObjectionsForRetention } from 'src/types/getResponseToPolicyAndReasonForCancellationQuery.type';
 import { GetValidationDataQuery } from 'src/types/getValidationDataQuery.type';
@@ -29,6 +30,26 @@ export class ToolsService {
   };
 
   private readonly customerPool = {
+    '2550722311': {
+      fullName: 'Adriana Morel',
+      birthDate: '21/07/1991',
+      phoneNumber: '3206493924',
+      email: 'adriana@gmail.com',
+      documentNumber: '2550722311',
+      documentType: 'CC',
+      policies: [
+        {
+          status: 'V',
+          name: 'Desempleo Digital',
+          dateStart: '02/12/2024',
+          prdId: '9418',
+          grossValue: '1440000.0',
+          valuePerMonth: '60000.0',
+          valuePerDay: '2000.0',
+          currency: 'COP',
+        },
+      ],
+    },
     '123456': {
       fullName: 'Cesar Llajaruna',
       birthDate: '19/01/1999',
@@ -91,16 +112,315 @@ export class ToolsService {
     },
   };
 
-  verifyIdentity(query: GetValidationDataQuery) {
+  async verifyIdentity(query: GetValidationDataQuery) {
     this.logger.log({ query });
     this.logger.log(
       `[verifyIdentity] with values ${JSON.stringify(query ?? {}, null, 3)}`,
     );
 
+    // const token = 'ytxa8u4ngp5eu6psm2amdu4m';
+    // await axios
+    //   .get(
+    //     'https://api-services-uat.cardifnet.com/CO/UAT/customer/v2/cancellations/:partnerId?documentNumber=1018442955&documentType=CC&productNumber=8121&policy=8121110184429552948',
+    //     {
+    //       headers: {
+    //         _p: '10',
+    //         correlation_id: '123e4567-e89b-12d3-a456-556642440000',
+    //         request_id: '123e4567-e89b-12d3-a456-556642440000',
+    //         Authorization: 'basic ' + token,
+    //       },
+    //     },
+    //   )
+    //   .then((res) => this.logger.log({ res }))
+    //   .catch((err) => this.logger.log({ err }));
+
     return {
       success: true,
       message: 'Identity verified successfully.',
       data: this.customerPool[query.customerId] || this.defaultCustomerData,
+    };
+  }
+
+  async policyInfo(query) {
+    this.logger.log(
+      `[policyInfo] with values ${JSON.stringify(query ?? {}, null, 3)}`,
+    );
+
+    this.logger.log({ query });
+
+    return {
+      success: true,
+      data: {
+        policy: {
+          endPeriodic: '20250201',
+          policyStatus: 'V',
+          dateApplicationCancellation: null,
+          dateCancellation: null,
+          dateCollection: null,
+          dateStartPolicy: '20241202',
+          dateEffectivePolicy: null,
+          dateLastPayment: null,
+          atentionLines: null,
+          reasonCancellation: null,
+          insuredName: 'ADRIANA LIZ OSBOURNE MOREL',
+          advisorName: null,
+          policyNumber: '941825507223114890',
+          collectionLastInforce: null,
+          lastFinancialProduct: '6333',
+          partnerEntered: 80,
+          documentType: 'CC',
+          documentNumber: '2550722311',
+          policyHolder: null,
+          insuredValue: null,
+          netValue: 4322.0,
+          grossValue: 5000.0,
+          returnedValue: null,
+          policyName: 'Desempleo Digital',
+          productName:
+            '9418-Scotiabank Colpatria-Desempleo-Cuentas & Tarjetas-Mensual-Hall',
+          referentialId: null,
+          collectionType: '2',
+          productDeudorIndic: null,
+          polSubThrId: '1',
+          cardifPolicyStartDate: '20241202',
+          cardifPolicyEndDate: '20250201',
+          prdId: 9418,
+          polSegment: null,
+          polChannel: 2,
+          polFinancialPrdType: 'CTA',
+          prdPeriodicityPremium: 2,
+          loanAmountCurrencyISO: 'COP',
+          cardifPlanId: 1,
+          cardifPlanName: 'Plan 1',
+          prdPeriodicityPremiumStr: 'Monthly',
+        },
+      },
+    };
+  }
+
+  async policyCoverages(query) {
+    this.logger.log(
+      `[policyCoverages] with values ${JSON.stringify(query ?? {}, null, 3)}`,
+    );
+
+    this.logger.log({ query });
+
+    return {
+      success: true,
+      data: {
+        coverages: [
+          {
+            coverageId: '861',
+            coverageName: 'Servicio Extendido de Desempleo',
+            coverageType: '0',
+            coverageBeneficiaryDescription: null,
+            coverageUse: '',
+            coverageBeginDate: '2024-11-06',
+            coverageBusinessLineCodeCardif: '31',
+            coverageMaxIncapacity: '0',
+            coverageMinIncapacity: '0',
+            coverageTimeBlocking: '0',
+            coverageTime: '0',
+            coverageTimeClaim: '0',
+            coverageLoanInstallmentAmount: '0',
+            coverageMaxClaimInstallment: '1',
+            coverageMaxClaimByYear: '99',
+            waitingPeriod: '0',
+            lackPeriod: '0',
+            prescriptionDays: '730',
+            prescriptonYears: null,
+            coverageMinAge: '18',
+            coverageMaxAge: '76',
+            insuredValue: '0',
+            maxInsuredValue: '0',
+            insuredValueCurrencyISO: 'COP',
+            continuityJob: '',
+            continuousWorkingDays: '0',
+            workingPermanencyDays: '',
+            eventLimitFlag: true,
+            gender: 'Female',
+            smokerFlag: true,
+            rentFlag: true,
+            coverageDeductibleDescription: null,
+            deductibleDescription: null,
+            coverageStartDate: '',
+            coverageEndDate: '',
+          },
+          {
+            coverageId: '159',
+            coverageName: 'Muerte Accidental',
+            coverageType: '0',
+            coverageBeneficiaryDescription: null,
+            coverageUse: 'V',
+            coverageBeginDate: '2024-11-06',
+            coverageBusinessLineCodeCardif: '31',
+            coverageMaxIncapacity: '0',
+            coverageMinIncapacity: '0',
+            coverageTimeBlocking: '0',
+            coverageTime: '0',
+            coverageTimeClaim: '0',
+            coverageLoanInstallmentAmount: '2500000',
+            coverageMaxClaimInstallment: '1',
+            coverageMaxClaimByYear: '1',
+            waitingPeriod: '0',
+            lackPeriod: '0',
+            prescriptionDays: '1825',
+            prescriptonYears: null,
+            coverageMinAge: '18',
+            coverageMaxAge: '76',
+            insuredValue: '2500000',
+            maxInsuredValue: '2500000',
+            insuredValueCurrencyISO: 'COP',
+            continuityJob: '',
+            continuousWorkingDays: '0',
+            workingPermanencyDays: '',
+            eventLimitFlag: true,
+            gender: 'Female',
+            smokerFlag: true,
+            rentFlag: true,
+            coverageDeductibleDescription: null,
+            deductibleDescription: null,
+            coverageStartDate: '',
+            coverageEndDate: '',
+          },
+          {
+            coverageId: '162',
+            coverageName: 'Desempleo',
+            coverageType: '0',
+            coverageBeneficiaryDescription: null,
+            coverageUse: '',
+            coverageBeginDate: '2024-11-06',
+            coverageBusinessLineCodeCardif: '24',
+            coverageMaxIncapacity: '0',
+            coverageMinIncapacity: '0',
+            coverageTimeBlocking: '0',
+            coverageTime: '0',
+            coverageTimeClaim: '0',
+            coverageLoanInstallmentAmount: '25000',
+            coverageMaxClaimInstallment: '4',
+            coverageMaxClaimByYear: '99',
+            waitingPeriod: '0',
+            lackPeriod: '30',
+            prescriptionDays: '730',
+            prescriptonYears: null,
+            coverageMinAge: '18',
+            coverageMaxAge: '76',
+            insuredValue: '100000',
+            maxInsuredValue: '100000',
+            insuredValueCurrencyISO: 'COP',
+            continuityJob: '',
+            continuousWorkingDays: '180',
+            workingPermanencyDays: '',
+            eventLimitFlag: true,
+            gender: 'Female',
+            smokerFlag: true,
+            rentFlag: true,
+            coverageDeductibleDescription: null,
+            deductibleDescription: null,
+            coverageStartDate: '',
+            coverageEndDate: '',
+          },
+          {
+            coverageId: '864',
+            coverageName: 'Servicio de Bienestar',
+            coverageType: '0',
+            coverageBeneficiaryDescription: null,
+            coverageUse: '',
+            coverageBeginDate: '2024-11-06',
+            coverageBusinessLineCodeCardif: '24',
+            coverageMaxIncapacity: '0',
+            coverageMinIncapacity: '0',
+            coverageTimeBlocking: '0',
+            coverageTime: '0',
+            coverageTimeClaim: '0',
+            coverageLoanInstallmentAmount: '0',
+            coverageMaxClaimInstallment: '1',
+            coverageMaxClaimByYear: '99',
+            waitingPeriod: '0',
+            lackPeriod: '0',
+            prescriptionDays: '730',
+            prescriptonYears: null,
+            coverageMinAge: '18',
+            coverageMaxAge: '76',
+            insuredValue: '0',
+            maxInsuredValue: '0',
+            insuredValueCurrencyISO: 'COP',
+            continuityJob: '',
+            continuousWorkingDays: '0',
+            workingPermanencyDays: '',
+            eventLimitFlag: true,
+            gender: 'Female',
+            smokerFlag: true,
+            rentFlag: true,
+            coverageDeductibleDescription: null,
+            deductibleDescription: null,
+            coverageStartDate: '',
+            coverageEndDate: '',
+          },
+        ],
+      },
+    };
+  }
+
+  async policyEcosystem(query) {
+    this.logger.log(
+      `[policyEcosystem] with values ${JSON.stringify(query ?? {}, null, 3)}`,
+    );
+
+    this.logger.log({ query });
+
+    return {
+      success: true,
+      data: {
+        ecosystem: [
+          {
+            name: 'Desempleo',
+            services: [
+              {
+                serviceName: 'Mejorar hoja de vida',
+                numberSessionsHolder: '99',
+                numberBeneficiaries: '0',
+                numberChangesBeneficiaries: '0',
+              },
+              {
+                serviceName: 'Comparar salario en el mercado',
+                numberSessionsHolder: '99',
+                numberBeneficiaries: '0',
+                numberChangesBeneficiaries: '0',
+              },
+              {
+                serviceName: 'Conocer ofertas laborales ',
+                numberSessionsHolder: '99',
+                numberBeneficiaries: '0',
+                numberChangesBeneficiaries: '0',
+              },
+            ],
+          },
+          {
+            name: 'Servicio de Bienestar',
+            services: [
+              {
+                serviceName: 'Mejorar hoja de vida',
+                numberSessionsHolder: '99',
+                numberBeneficiaries: '0',
+                numberChangesBeneficiaries: '0',
+              },
+              {
+                serviceName: 'Comparar Salario en el mercado',
+                numberSessionsHolder: '99',
+                numberBeneficiaries: '0',
+                numberChangesBeneficiaries: '0',
+              },
+              {
+                serviceName: 'Conocer ofertas laborales ',
+                numberSessionsHolder: '99',
+                numberBeneficiaries: '0',
+                numberChangesBeneficiaries: '0',
+              },
+            ],
+          },
+        ],
+      },
     };
   }
 
